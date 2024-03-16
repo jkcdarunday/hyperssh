@@ -35,12 +35,13 @@ if (!peer) {
 
 const sshCommand = argv.e || ''
 
-function sshArgs (username, port) {
+function sshArgs (username, port, extraArgs) {
   return [
     '-o', 'StrictHostKeyChecking=no',
     '-o', 'UserKnownHostsFile=/dev/null',
     '-p', port,
-    username + '@localhost'
+    ...extraArgs,
+    username + '@localhost',
   ].concat(sshCommand)
 }
 
@@ -79,7 +80,7 @@ if (argv.rdp) {
   proxy.listen(0, function () {
     const { port } = proxy.address()
 
-    spawn('ssh', sshArgs(username, port), {
+    spawn('ssh', sshArgs(username, port, argv._), {
       stdio: 'inherit'
     }).once('exit', function (code) {
       process.exit(code)
